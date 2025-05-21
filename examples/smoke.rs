@@ -3,6 +3,7 @@ use cream::{
     load_static_json, CreamBuilder, Error, GetResourceArgs, ListResourceArgs, ListResourceResult,
     UpdateOp, UpdateResourceArgs,
 };
+use scim::UserExt0;
 use tower::ServiceBuilder;
 use tower_http::trace::TraceLayer;
 
@@ -17,6 +18,7 @@ mod scim {
 
     declare_resource!("examples/user_type.json" as User [
         "examples/user_schema.json",
+        "examples/user_ext.json",
     ]);
 
     declare_resource!("examples/group_type.json" as Group [
@@ -203,6 +205,10 @@ impl scim::UserManager for ScimManager {
                 display_name: resource.display_name,
                 active: resource.active,
                 groups: None,
+                ext0: UserExt0 {
+                    favorite_color: None,
+                    favorite_number: None,
+                },
                 schemas: Default::default(),
                 meta: Default::default(),
             },
@@ -290,6 +296,10 @@ impl scim::UserManager for ScimManager {
                 display_name: resource.display_name,
                 active: resource.active,
                 groups: None,
+                ext0: UserExt0 {
+                    favorite_color: None,
+                    favorite_number: None,
+                },
                 schemas: Default::default(),
                 meta: Default::default(),
             },
