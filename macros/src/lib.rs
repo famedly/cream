@@ -491,11 +491,13 @@ fn declare_schema_struct(
             // if it has a single element, so use a fixed size array instead.
             let schema_type_name = &schema_type_names[0];
             fields.push(quote! {
+                #[serde(skip_deserializing)]
                 pub schemas: [#schema_type_name; 1],
             });
         } else {
             // With more than once schema we must use a tuple since the schemas are distinct types.
             fields.push(quote! {
+                #[serde(skip_deserializing)]
                 pub schemas: (#(#schema_type_names),*),
             });
         }
@@ -508,7 +510,7 @@ fn declare_schema_struct(
     let declaration = quote! {
         #(#other_declarations)*
 
-        #[derive(Debug, ::cream::hidden::serde::Serialize, Clone)]
+        #[derive(Debug, ::cream::hidden::serde::Deserialize, ::cream::hidden::serde::Serialize, Clone)]
         pub struct #struct_name {
             #(
                 #fields

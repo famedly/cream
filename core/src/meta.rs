@@ -1,12 +1,13 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use crate::{date_time::DateTime, reference::Reference};
 
 /// Metadata about a resource.
-#[derive(Serialize, Debug, Clone, Default)]
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
 #[serde(rename_all = "camelCase")]
-pub struct Meta<R: Serialize> {
+pub struct Meta<R> {
     /// The type of resource.
+    #[serde(skip_deserializing)]
     pub resource_type: R,
     /// When the resource was created.
     pub created: Option<DateTime>,
