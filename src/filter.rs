@@ -15,13 +15,20 @@ mod parse;
 #[cfg(test)]
 mod tests;
 
+/// Filter expression
 #[derive(Debug, PartialEq)]
-pub(crate) enum Filter {
+pub enum Filter {
+    /// Whether an attribute is present.
     Present(AttrPath),
+    /// A comparison between an attribute and a value.
     Compare(AttrPath, CompareOp, CompValue),
+    /// Whether a value in a multi-valued attribute matches a filter.
     Has(AttrPath, Box<Self>),
+    /// A logical AND operation between filters.
     And(Vec<Self>),
+    /// A logical OR operation between filters.
     Or(Vec<Self>),
+    /// A logical NOT operation on a filter.
     Not(Box<Self>),
 }
 
@@ -79,7 +86,8 @@ pub mod prelude {
 }
 
 impl Filter {
-    pub(crate) fn as_ref<'a>(&'a self, scope: &'a Bump) -> FilterRef<'a> {
+    #[allow(missing_docs)]
+    pub fn as_ref<'a>(&'a self, scope: &'a Bump) -> FilterRef<'a> {
         match self {
             Self::Present(attr_path) => FilterRef::Present(attr_path.as_ref()),
             Self::Compare(attr_path, op, value) => {
@@ -188,9 +196,12 @@ impl FilterRef<'_> {
     }
 }
 
+/// An attribute or filter expression which can be the target of an update.
 #[derive(Debug, PartialEq)]
 pub(crate) enum ValuePath {
+    /// A simple attribute path.
     Attr(AttrPath),
+    /// An attribute path with a filter applied.
     Filtered(AttrPath, Filter),
 }
 
@@ -205,7 +216,7 @@ impl ValuePath {
     }
 }
 
-/// A attribute or filter expression which can be the target of an update.
+/// A reference to an attribute or a filter expression which can be the target of an update.
 #[derive(Debug, PartialEq, Copy, Clone)]
 pub enum ValuePathRef<'a> {
     /// A simple attribute path.
@@ -214,10 +225,14 @@ pub enum ValuePathRef<'a> {
     Filtered(AttrPathRef<'a>, FilterRef<'a>),
 }
 
+/// A single attribute.
 #[derive(Debug, PartialEq, Clone)]
-pub(crate) struct AttrPath {
+pub struct AttrPath {
+    /// The schema ID to which this attribute belongs. Omitted for core schema attributes.
     pub urn: Option<String>,
+    /// The name of the attribute.
     pub name: String,
+    /// The name of a sub-attribute, if any.
     pub sub_attr: Option<String>,
 }
 
@@ -284,17 +299,22 @@ impl FromStr for CompareOp {
     }
 }
 
-// https://datatracker.ietf.org/doc/html/rfc7159
+/// A literal value in a filter.
+/// <https://datatracker.ietf.org/doc/html/rfc7159>
 #[derive(Clone, Debug, PartialEq)]
-pub(crate) enum CompValue {
+pub enum CompValue {
+    /// The null value.
     Null,
+    /// A boolean value.
     Bool(bool),
+    /// A numeric value.
     Num(INumber),
+    /// A string value.
     Str(String),
 }
 
 impl CompValue {
-    pub(crate) fn as_ref(&self) -> CompValueRef<'_> {
+    pub fn as_ref(&self) -> CompValueRef<'_> {
         match self {
             Self::Null => CompValueRef::Null,
             Self::Bool(b) => CompValueRef::Bool(*b),
@@ -304,7 +324,7 @@ impl CompValue {
     }
 }
 
-/// A literal value in a filter.
+/// A reference to a literal value in a filter.
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub enum CompValueRef<'a> {
     /// The null value.
@@ -317,7 +337,8 @@ pub enum CompValueRef<'a> {
     Str(&'a str),
 }
 
-pub(crate) fn parse_filter(input: &str) -> Result<Filter, Error> {
+/// Parses filter expression from a string.
+pub fn parse_filter(input: &str) -> Result<Filter, Error> {
     let (remain, expression) = parse::filter(input)
         .map_err(|e| e.to_owned())
         .finish()
@@ -358,6 +379,7 @@ pub(crate) fn parse_value_path(input: &str) -> Result<ValuePath, Error> {
     }
     Ok(expression)
 }
+
 pub(crate) fn parse_attr_path(input: &str) -> Result<AttrPath, Error> {
     let (remain, expression) = parse::attr_path(input)
         .map_err(|e| e.to_owned())
