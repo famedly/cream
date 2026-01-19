@@ -55,7 +55,6 @@ pub trait GenericResourceManager: Debug + Send + Sync + 'static {
 }
 
 /// Arguments for listing resources.
-#[non_exhaustive]
 #[derive(Debug, Default)]
 pub struct ListResourceArgs<'a> {
     /// Filter to apply to the resources.
@@ -73,7 +72,6 @@ pub struct ListResourceArgs<'a> {
 }
 
 /// Arguments for getting a resource by ID.
-#[non_exhaustive]
 #[derive(Debug, Clone)]
 pub struct GetResourceArgs<'a> {
     /// ID of the resource to get.
@@ -94,7 +92,6 @@ pub struct ListResourceResult<T> {
 }
 
 /// Arguments for updating a resource.
-#[non_exhaustive]
 #[derive(Debug)]
 pub struct UpdateResourceArgs<'a> {
     /// ID of the resource to update.
@@ -104,7 +101,6 @@ pub struct UpdateResourceArgs<'a> {
 }
 
 /// An update to apply to a resource.
-#[non_exhaustive]
 #[derive(Debug, Clone, Copy)]
 pub struct UpdateResourceItem<'a> {
     /// Path to the attribute to update.
