@@ -12,15 +12,15 @@ declare_schema!(ErrorSchema = "urn:ietf:params:scim:api:messages:2.0:Error");
 #[derive(Debug, Serialize)]
 pub struct Error {
     /// ["urn:ietf:params:scim:api:messages:2.0:Error"]
-    pub(crate) schemas: [ErrorSchema; 1],
+    pub schemas: [ErrorSchema; 1],
     /// HTTP status code to be returned.
     #[serde(serialize_with = "Error::serialize_status")]
-    pub(crate) status: StatusCode,
+    pub status: StatusCode,
     /// SCIM error type.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub(crate) scim_type: Option<ErrorType>,
+    pub scim_type: Option<ErrorType>,
     /// Human-readable error message.
-    pub(crate) detail: String,
+    pub detail: String,
 }
 
 impl Display for Error {
